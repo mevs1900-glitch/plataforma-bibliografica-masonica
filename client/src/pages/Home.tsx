@@ -1,9 +1,16 @@
-import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Home() {
-  const { signInWithGoogle, loading } = useAuth();
+  const handleLogin = () => {
+    // Redirigir directamente al dashboard de miembro (temporal)
+    window.location.href = "/dashboard";
+  };
+
+  const handleAdminLogin = () => {
+    // Redirigir directamente al admin (temporal)
+    window.location.href = "/admin";
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800">
@@ -31,16 +38,15 @@ export default function Home() {
                 ACCESO MIEMBROS
               </CardTitle>
               <CardDescription className="text-center text-gray-400">
-                Ingresa con tu cuenta de Google autorizada
+                Accede al panel de miembros
               </CardDescription>
             </CardHeader>
             <CardContent className="flex justify-center">
               <Button 
-                onClick={signInWithGoogle} 
-                disabled={loading}
+                onClick={handleLogin}
                 className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-2"
               >
-                {loading ? "Cargando..." : "🔓 Ingresar con Google"}
+                🔓 Acceder como Miembro
               </Button>
             </CardContent>
           </Card>
@@ -57,11 +63,10 @@ export default function Home() {
             </CardHeader>
             <CardContent className="flex justify-center">
               <Button 
-                onClick={signInWithGoogle} 
-                disabled={loading}
+                onClick={handleAdminLogin}
                 className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-2"
               >
-                {loading ? "Cargando..." : "🔑 Acceso Administrador"}
+                🔑 Acceder como Administrador
               </Button>
             </CardContent>
           </Card>
