@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma Masónica | Acceso Miembros</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%);
+            min-height: 100vh;
+            color: #e0d6b0;
+        }
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .login-card {
+            background: rgba(26, 26, 46, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid #c9a84c;
+            border-radius: 20px;
+            padding: 50px 40px;
+            text-align: center;
+            max-width: 450px;
+            width: 100%;
+        }
+        .masonic-symbol { font-size: 64px; margin-bottom: 20px; color: #c9a84c; letter-spacing: 10px; }
+        h1 { font-size: 1.8em; margin-bottom: 10px; color: #c9a84c; }
+        .subtitle { margin-bottom: 30px; color: #aaa; font-style: italic; }
+        .login-btn {
+            background: #c9a84c;
+            color: #0a0a1a;
+            border: none;
+            padding: 14px 35px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border-radius: 40px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        .login-btn:hover { background: #e0c06c; transform: translateY(-2px); }
+        .member-panel { display: none; min-height: 100vh; flex-direction: column; }
+        .admin-panel { display: none; min-height: 100vh; flex-direction: column; }
+        .dashboard-header {
+            background: rgba(10, 10, 26, 0.95);
+            border-bottom: 1px solid #c9a84c;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .logo-area { display: flex; align-items: center; gap: 10px; }
+        .logo-symbol { font-size: 28px; color: #c9a84c; }
+        .logo-text { font-size: 1.2em; letter-spacing: 2px; font-weight: bold; }
+        .user-info { display: flex; align-items: center; gap: 15px; }
+        .user-avatar { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #c9a84c; }
+        .logout-btn {
+            background: transparent;
+            border: 1px solid #c9a84c;
+            color: #c9a84c;
+            padding: 6px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        .dashboard-content { flex: 1; padding: 40px 30px; max-width: 1400px; margin: 0 auto; width: 100%; }
+        .action-buttons { display: flex; gap: 25px; justify-content: center; margin-bottom: 50px; flex-wrap: wrap; }
+        .action-btn {
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 100%);
+            border: 1px solid #c9a84c;
+            color: #c9a84c;
+            padding: 15px 35px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .action-btn:hover { background: #c9a84c; color: #0a0a1a; }
+        .dynamic-area {
+            background: rgba(26, 26, 46, 0.5);
+            border-radius: 15px;
+            padding: 30px;
+            min-height: 400px;
+            border: 1px solid rgba(201,168,76,0.3);
+        }
+        .welcome-message { text-align: center; padding: 40px; }
+        .welcome-message h2 { color: #c9a84c; margin-bottom: 15px; }
+        .publicaciones-list { display: grid; gap: 20px; }
+        .publicacion-item {
+            background: rgba(0,0,0,0.4);
+            border-left: 4px solid #c9a84c;
+            padding: 18px;
+            border-radius: 8px;
+        }
+        .publicacion-titulo { font-size: 1.2em; color: #c9a84c; margin-bottom: 8px; }
+        .publicacion-meta { font-size: 0.8em; color: #888; }
+        .search-box { margin-bottom: 25px; }
+        .search-input {
+            width: 100%;
+            padding: 12px 20px;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #c9a84c;
+            border-radius: 40px;
+            color: #e0d6b0;
+            font-size: 1em;
+        }
+        .dashboard-footer {
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid rgba(201,168,76,0.3);
+            font-size: 0.8em;
+            color: #666;
+        }
+        .empty-state { text-align: center; padding: 50px; color: #888; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #333; }
+        th { background: #c9a84c; color: #0a0a1a; }
+        .approve-btn { background: green; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+        .reject-btn { background: red; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+        @media (max-width: 768px) {
+            .dashboard-header { flex-direction: column; text-align: center; }
+            .action-btn { padding: 10px 20px; font-size: 0.9em; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- PANTALLA DE LOGIN -->
+<div id="loginContainer" class="login-container">
+    <div class="login-card">
+        <div class="masonic-symbol">◈✦◇✦◈</div>
+        <h1>📚 PLATAFORMA MASÓNICA</h1>
+        <p class="subtitle">Acceso exclusivo para miembros autorizados</p>
+        <button class="login-btn" onclick="mostrarOpciones()">🔓 Ingresar</button>
+        <p style="margin-top: 25px; font-size: 0.75em; color: #666;">Solo miembros verificados tienen acceso al repositorio.</p>
+    </div>
+</div>
+
+<!-- SELECCIÓN DE ROL -->
+<div id="roleSelector" style="display:none;" class="login-container">
+    <div class="login-card">
+        <div class="masonic-symbol">◈✦◇✦◈</div>
+        <h2>Selecciona tu rol</h2>
+        <button class="login-btn" onclick="entrarComoMiembro()">📖 Acceder como Miembro</button>
+        <button class="login-btn" onclick="entrarComoAdmin()">👑 Acceder como Administrador</button>
+        <button class="login-btn" onclick="volverLogin()">⬅ Volver</button>
+    </div>
+</div>
+
+<!-- PANEL DE MIEMBRO -->
+<div id="memberPanel" class="member-panel">
+    <div class="dashboard-header">
+        <div class="logo-area">
+            <span class="logo-symbol">◈✦◈</span>
+            <span class="logo-text">BIBLIOTHECA MASÓNICA</span>
+        </div>
+        <div class="user-info">
+            <img id="userAvatar" class="user-avatar" src="https://ui-avatars.com/api/?background=c9a84c&color=fff&name=H">
+            <span id="userName" class="user-name">Hermano</span>
+            <button class="logout-btn" onclick="cerrarSesion()">❯❯ Salir</button>
+        </div>
+    </div>
+
+    <div class="dashboard-content">
+        <div class="action-buttons">
+            <button id="verPublicacionesBtn" class="action-btn" onclick="mostrarPublicaciones()">📖 Ver publicaciones</button>
+            <button id="buscarTrabajosBtn" class="action-btn" onclick="mostrarBuscador()">🔍 Buscar trabajos</button>
+        </div>
+        <div id="dynamicArea" class="dynamic-area">
+            <div class="welcome-message">
+                <h2>◈ Bienvenido Hermano ◈</h2>
+                <p>Selecciona una opción para acceder a la biblioteca de trabajos masónicos.</p>
+                <p style="margin-top: 20px;">📜 "La luz brilla para quien la busca"</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-footer">
+        © 2026 Plataforma Bibliográfica Masónica. Todos los derechos reservados.
+    </div>
+</div>
+
+<!-- PANEL DE ADMINISTRADOR -->
+<div id="adminPanel" class="admin-panel">
+    <div class="dashboard-header">
+        <div class="logo-area">
+            <span class="logo-symbol">◈✦◈</span>
+            <span class="logo-text">BIBLIOTHECA MASÓNICA - ADMIN</span>
+        </div>
+        <div class="user-info">
+            <img id="adminAvatar" class="user-avatar" src="https://ui-avatars.com/api/?background=c9a84c&color=fff&name=Admin">
+            <span id="adminName" class="user-name">Administrador</span>
+            <button class="logout-btn" onclick="cerrarSesion()">❯❯ Salir</button>
+        </div>
+    </div>
+
+    <div class="dashboard-content">
+        <div class="action-buttons">
+            <button class="action-btn" onclick="mostrarSubirTrabajo()">📤 Subir trabajo</button>
+            <button class="action-btn" onclick="mostrarListaMiembros()">👥 Lista de hermanos</button>
+            <button class="action-btn" onclick="mostrarAprobarMiembros()">✅ Aprobar miembros</button>
+        </div>
+        <div id="adminDynamicArea" class="dynamic-area">
+            <div class="welcome-message">
+                <h2>◈ Panel de Administrador ◈</h2>
+                <p>Gestiona los miembros, aprueba accesos y administra los documentos.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-footer">
+        © 2026 Plataforma Bibliográfica Masónica. Todos los derechos reservados.
+    </div>
+</div>
+
+<script>
+    // Datos de ejemplo
+    const publicaciones = [
+        { titulo: "Los Tres Pilares de la Masonería", autor: "H.·. Juan Pérez", fecha: "15/03/2026", descripcion: "Análisis sobre Libertad, Igualdad y Fraternidad." },
+        { titulo: "El Simbolismo de la Escuadra y el Compás", autor: "H.·. Carlos Gómez", fecha: "02/02/2026", descripcion: "Origen y significado de los símbolos universales." },
+        { titulo: "Ritual del Grado de Aprendiz", autor: "Gran Logia", fecha: "10/01/2026", descripcion: "Ceremonia completa y explicaciones." }
+    ];
+
+    const trabajos = [
+        { titulo: "El Número 3 y su significado", autor: "H.·. Andrés Silva", grado: "Compañero", resumen: "Estudio sobre el simbolismo del número 3." },
+        { titulo: "Inteligencia emocional en Logia", autor: "H.·. María Fuentes", grado: "Maestro", resumen: "Aplicación de la inteligencia emocional." }
+    ];
+
+    let miembrosPendientes = [
+        { nombre: "Carlos López", email: "carlos@logia.cl", fecha: "20/05/2026" },
+        { nombre: "Roberto Muñoz", email: "roberto@logia.cl", fecha: "19/05/2026" }
+    ];
+
+    let miembrosAprobados = [
+        { nombre: "Juan Pérez", email: "juan@logia.cl", fecha: "15/05/2026" }
+    ];
+
+    function mostrarOpciones() {
+        document.getElementById('loginContainer').style.display = 'none';
+        document.getElementById('roleSelector').style.display = 'flex';
+    }
+
+    function volverLogin() {
+        document.getElementById('roleSelector').style.display = 'none';
+        document.getElementById('loginContainer').style.display = 'flex';
+    }
+
+    function entrarComoMiembro() {
+        document.getElementById('roleSelector').style.display = 'none';
+        document.getElementById('memberPanel').style.display = 'flex';
+    }
+
+    function entrarComoAdmin() {
+        document.getElementById('roleSelector').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'flex';
+    }
+
+    function cerrarSesion() {
+        document.getElementById('memberPanel').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'none';
+        document.getElementById('loginContainer').style.display = 'flex';
+    }
+
+    function mostrarPublicaciones() {
+        let html = '<h2 style="color:#c9a84c;">📖 Publicaciones recientes</h2><div class="publicaciones-list">';
+        publicaciones.forEach(p => {
+            html += `<div class="publicacion-item">
+                <div class="publicacion-titulo">${p.titulo}</div>
+                <div class="publicacion-meta">✍️ ${p.autor} | 📅 ${p.fecha}</div>
+                <div>${p.descripcion}</div>
+            </div>`;
+        });
+        html += '</div>';
+        document.getElementById('dynamicArea').innerHTML = html;
+    }
+
+    function mostrarBuscador() {
+        document.getElementById('dynamicArea').innerHTML = `
+            <h2 style="color:#c9a84c;">🔍 Buscar trabajos</h2>
+            <div class="search-box">
+                <input type="text" id="searchInput" class="search-input" placeholder="Buscar por título, autor o grado..." onkeyup="filtrarTrabajos()">
+            </div>
+            <div id="resultadosBusqueda" class="publicaciones-list">${renderizarTrabajos(trabajos)}</div>
+        `;
+    }
+
+    function filtrarTrabajos() {
+        const busqueda = document.getElementById('searchInput').value.toLowerCase();
+        const filtrados = trabajos.filter(t => 
+            t.titulo.toLowerCase().includes(busqueda) ||
+            t.autor.toLowerCase().includes(busqueda) ||
+            t.grado.toLowerCase().includes(busqueda)
+        );
+        document.getElementById('resultadosBusqueda').innerHTML = renderizarTrabajos(filtrados);
+    }
+
+    function renderizarTrabajos(lista) {
+        if (lista.length === 0) return '<div class="empty-state">🔎 No se encontraron trabajos.</div>';
+        let html = '';
+        lista.forEach(t => {
+            html += `<div class="publicacion-item">
+                <div class="publicacion-titulo">📜 ${t.titulo}</div>
+                <div class="publicacion-meta">✍️ ${t.autor} | ⬤ ${t.grado}</div>
+                <div>${t.resumen}</div>
+            </div>`;
+        });
+        return html;
+    }
+
+    // Funciones de ADMIN
+    function mostrarSubirTrabajo() {
+        document.getElementById('adminDynamicArea').innerHTML = `
+            <h2 style="color:#c9a84c;">📤 Subir nuevo trabajo</h2>
+            <form onsubmit="subirTrabajo(event)" style="display:flex; flex-direction:column; gap:15px; margin-top:20px;">
+                <input type="text" id="tituloTrabajo" placeholder="Título" required style="padding:10px; border-radius:5px; border:1px solid #c9a84c; background:#1a1a2e; color:white;">
+                <input type="text" id="autorTrabajo" placeholder="Autor" required style="padding:10px; border-radius:5px; border:1px solid #c9a84c; background:#1a1a2e; color:white;">
+                <select id="gradoTrabajo" style="padding:10px; border-radius:5px; border:1px solid #c9a84c; background:#1a1a2e; color:white;">
+                    <option value="Aprendiz">Aprendiz</option>
+                    <option value="Compañero">Compañero</option>
+                    <option value="Maestro">Maestro</option>
+                </select>
+                <textarea id="resumenTrabajo" placeholder="Resumen" rows="3" style="padding:10px; border-radius:5px; border:1px solid #c9a84c; background:#1a1a2e; color:white;"></textarea>
+                <button type="submit" style="background:#c9a84c; color:#0a0a1a; padding:10px; border:none; border-radius:5px; cursor:pointer;">✅ Subir trabajo</button>
+            </form>
+        `;
+    }
+
+    function subirTrabajo(event) {
+        event.preventDefault();
+        const nuevoTrabajo = {
+            titulo: document.getElementById('tituloTrabajo').value,
+            autor: document.getElementById('autorTrabajo').value,
+            grado: document.getElementById('gradoTrabajo').value,
+            resumen: document.getElementById('resumenTrabajo').value
+        };
+        trabajos.push(nuevoTrabajo);
+        alert('✅ Trabajo subido correctamente');
+        mostrarListaMiembros();
+    }
+
+    function mostrarListaMiembros() {
+        let html = `<h2 style="color:#c9a84c;">👥 Miembros aprobados</h2>
+            <table>
+                <tr><th>Nombre</th><th>Email</th><th>Fecha de aprobación</th></tr>`;
+        miembrosAprobados.forEach(m => {
+            html += `<tr><td>${m.nombre}</td><td>${m.email}</td><td>${m.fecha}</td></tr>`;
+        });
+        html += `</table>`;
+        document.getElementById('adminDynamicArea').innerHTML = html;
+    }
+
+    function mostrarAprobarMiembros() {
+        let html = `<h2 style="color:#c9a84c;">✅ Solicitudes pendientes</h2>
+            <table>
+                <tr><th>Nombre</th><th>Email</th><th>Fecha</th><th>Acción</th></tr>`;
+        miembrosPendientes.forEach((m, idx) => {
+            html += `<tr>
+                <td>${m.nombre}</td>
+                <td>${m.email}</td>
+                <td>${m.fecha}</td>
+                <td>
+                    <button class="approve-btn" onclick="aprobarMiembro(${idx})">✅ Aprobar</button>
+                    <button class="reject-btn" onclick="rechazarMiembro(${idx})">❌ Rechazar</button>
+                </td>
+            </tr>`;
+        });
+        html += `</table>`;
+        if (miembrosPendientes.length === 0) html = '<p>No hay solicitudes pendientes</p>';
+        document.getElementById('adminDynamicArea').innerHTML = html;
+    }
+
+    function aprobarMiembro(idx) {
+        const aprobado = miembrosPendientes[idx];
+        miembrosAprobados.push(aprobado);
+        miembrosPendientes.splice(idx, 1);
+        mostrarAprobarMiembros();
+        alert(`✅ ${aprobado.nombre} ha sido aprobado como miembro`);
+    }
+
+    function rechazarMiembro(idx) {
+        const rechazado = miembrosPendientes[idx];
+        miembrosPendientes.splice(idx, 1);
+        mostrarAprobarMiembros();
+        alert(`❌ ${rechazado.nombre} ha sido rechazado`);
+    }
+</script>
+
+</body>
+</html>
